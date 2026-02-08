@@ -1,0 +1,7 @@
+{
+  "name": "GymTracker AI",
+  "description": "A modern, intelligent workout tracker. Log lifts, visualize progress with D3, and get AI-powered coaching tips using Gemini.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
