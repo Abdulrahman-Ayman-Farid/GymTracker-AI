@@ -13,7 +13,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
     <div class="min-h-screen bg-slate-950 pb-20">
       <!-- Header -->
       <div class="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 p-4 flex items-center gap-4">
-        <a routerLink="/" class="p-2 rounded-full hover:bg-slate-800 text-slate-300 transition-colors">
+        <a routerLink="/home" class="p-2 rounded-full hover:bg-slate-800 text-slate-300 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
         <h1 class="text-xl font-bold text-white">{{ category()?.name }} Workouts</h1>
@@ -32,7 +32,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
         @for (workout of workouts(); track workout.id) {
           <a [routerLink]="['/workout', workout.id]" 
-             class="flex items-center gap-4 p-3 bg-slate-900 rounded-xl border border-slate-800 hover:border-slate-700 active:bg-slate-800 transition-all">
+             class="flex items-center gap-4 p-3 bg-slate-900 rounded-xl border border-slate-800 hover:border-slate-700 active:bg-slate-800 transition-all shadow-sm">
             <div class="w-16 h-16 rounded-lg overflow-hidden bg-slate-800 flex-shrink-0 relative">
                @if (workout.image) {
                  <img [src]="workout.image" class="w-full h-full object-cover" alt="Workout">
