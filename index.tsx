@@ -1,5 +1,5 @@
 
-import '@angular/compiler';
+
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './src/app.component';
 import { provideRouter, withHashLocation } from '@angular/router';
