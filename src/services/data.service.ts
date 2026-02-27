@@ -21,6 +21,8 @@ export interface Log {
   weight: number;
   reps: number;
   sets: number;
+  rpe?: number; // Rate of Perceived Exertion (1-10)
+  restTime?: number; // Rest time in seconds
   notes?: string;
 }
 

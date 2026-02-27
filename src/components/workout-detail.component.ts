@@ -87,11 +87,19 @@ import * as d3 from 'd3';
                      <span class="text-2xl font-bold text-emerald-400">{{ log.weight }}<span class="text-sm font-normal text-slate-500">kg</span></span>
                      <span class="text-slate-600">×</span>
                      <span class="text-lg font-semibold text-white">{{ log.reps }}<span class="text-sm font-normal text-slate-500">reps</span></span>
+                     <span class="text-slate-600">×</span>
+                     <span class="text-lg font-semibold text-white">{{ log.sets }}<span class="text-sm font-normal text-slate-500">sets</span></span>
                    </div>
-                   <div class="text-xs text-slate-500 mt-1 flex gap-2">
-                      <span>{{ log.sets }} sets</span>
-                      <span>•</span>
-                      <span>{{ formatDate(log.date) }}</span>
+                   <div class="text-xs text-slate-500 mt-2 flex flex-wrap gap-3 items-center">
+                      <span class="bg-slate-800 px-2 py-1 rounded text-slate-300">Vol: {{ calculateVolume(log.weight, log.reps, log.sets) }}kg</span>
+                      <span class="bg-slate-800 px-2 py-1 rounded text-slate-300">1RM: ~{{ calculate1RM(log.weight, log.reps) }}kg</span>
+                      @if (log.rpe) {
+                        <span class="bg-indigo-900/40 text-indigo-300 px-2 py-1 rounded">RPE {{ log.rpe }}</span>
+                      }
+                      @if (log.restTime) {
+                        <span class="bg-slate-800 px-2 py-1 rounded text-slate-300">{{ log.restTime }}s rest</span>
+                      }
+                      <span class="text-slate-600 ml-auto">{{ formatDate(log.date) }}</span>
                    </div>
                    @if (log.notes) {
                      <p class="text-xs text-slate-400 mt-2 italic">"{{ log.notes }}"</p>
@@ -153,6 +161,17 @@ import * as d3 from 'd3';
                 </div>
               </div>
 
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-slate-400 mb-1">RPE (1-10)</label>
+                  <input type="number" formControlName="rpe" min="1" max="10" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white text-center text-lg focus:border-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-slate-400 mb-1">Rest (sec)</label>
+                  <input type="number" formControlName="restTime" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white text-center text-lg focus:border-emerald-500 focus:outline-none">
+                </div>
+              </div>
+
               <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">Notes (Optional)</label>
                 <textarea formControlName="notes" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:border-emerald-500 focus:outline-none"></textarea>
@@ -195,6 +214,8 @@ export class WorkoutDetailComponent {
     weight: [0, [Validators.required, Validators.min(1)]],
     reps: [0, [Validators.required, Validators.min(1)]],
     sets: [3, [Validators.required, Validators.min(1)]],
+    rpe: [8, [Validators.min(1), Validators.max(10)]],
+    restTime: [90, [Validators.min(0)]],
     notes: ['']
   });
 
@@ -220,7 +241,9 @@ export class WorkoutDetailComponent {
       this.logForm.patchValue({
         weight: last.weight,
         reps: last.reps,
-        sets: last.sets
+        sets: last.sets,
+        rpe: last.rpe || 8,
+        restTime: last.restTime || 90
       });
     }
   }
@@ -239,11 +262,21 @@ export class WorkoutDetailComponent {
         weight: this.logForm.value.weight!,
         reps: this.logForm.value.reps!,
         sets: this.logForm.value.sets!,
+        rpe: this.logForm.value.rpe || undefined,
+        restTime: this.logForm.value.restTime || undefined,
         notes: this.logForm.value.notes || undefined
       });
       this.isLogging.set(false);
       this.aiAdvice.set(null); // Clear old advice on new log
     }
+  }
+
+  calculate1RM(weight: number, reps: number): number {
+    return Math.round(weight * (1 + reps / 30));
+  }
+
+  calculateVolume(weight: number, reps: number, sets: number): number {
+    return weight * reps * sets;
   }
 
   deleteLog(id: string) {
