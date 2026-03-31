@@ -17,8 +17,13 @@ import { DataService, Log, Workout, Category } from '../services/data.service';
             Dashboard
           </h1>
         </div>
-        <div class="w-12 h-12 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center shadow-sm">
-           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-brand-400"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M6 20v-2a6 6 0 1 1 12 0v2"/><path d="M6 4v2a6 6 0 1 0 12 0V4"/></svg>
+        <div class="flex items-center gap-3">
+          <a routerLink="/" class="w-12 h-12 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center shadow-sm hover:bg-white/5 transition-colors text-neutral-400 hover:text-white" title="Return to Welcome">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </a>
+          <div class="w-12 h-12 rounded-full bg-[#141414] border border-white/5 flex items-center justify-center shadow-sm">
+             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-brand-400"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M6 20v-2a6 6 0 1 1 12 0v2"/><path d="M6 4v2a6 6 0 1 0 12 0V4"/></svg>
+          </div>
         </div>
       </header>
 

@@ -35,14 +35,14 @@ export class DataService {
   
   // Default Categories
   private defaultCategories: Category[] = [
-    { id: 'chest', name: 'Chest', image: 'https://picsum.photos/id/34/400/300' },
-    { id: 'back', name: 'Back', image: 'https://picsum.photos/id/65/400/300' },
-    { id: 'legs', name: 'Legs', image: 'https://picsum.photos/id/75/400/300' },
-    { id: 'shoulders', name: 'Shoulders', image: 'https://picsum.photos/id/88/400/300' },
-    { id: 'biceps', name: 'Biceps', image: 'https://picsum.photos/id/99/400/300' },
-    { id: 'triceps', name: 'Triceps', image: 'https://picsum.photos/id/102/400/300' },
-    { id: 'abs', name: 'Abs', image: 'https://picsum.photos/id/120/400/300' },
-    { id: 'cardio', name: 'Cardio', image: 'https://picsum.photos/id/130/400/300' },
+    { id: 'chest', name: 'Chest', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop' },
+    { id: 'back', name: 'Back', image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?w=400&h=300&fit=crop' },
+    { id: 'legs', name: 'Legs', image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=400&h=300&fit=crop' },
+    { id: 'shoulders', name: 'Shoulders', image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=400&h=300&fit=crop' },
+    { id: 'biceps', name: 'Biceps', image: 'https://images.unsplash.com/photo-1581009137042-c552e48ce52f?w=400&h=300&fit=crop' },
+    { id: 'triceps', name: 'Triceps', image: 'https://images.unsplash.com/photo-1530822847156-5df684ec5ee1?w=400&h=300&fit=crop' },
+    { id: 'abs', name: 'Abs', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop' },
+    { id: 'cardio', name: 'Cardio', image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=300&fit=crop' },
   ];
 
   // Signals
