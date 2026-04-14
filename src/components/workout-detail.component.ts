@@ -34,6 +34,22 @@ import * as d3 from 'd3';
       </div>
 
       <div class="p-4 space-y-6">
+        <!-- PR Banner -->
+        @if (personalRecord()) {
+          <div class="bg-gradient-to-r from-amber-500/10 to-transparent border border-amber-500/20 rounded-[1.5rem] p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+            </div>
+            <div>
+              <p class="text-xs text-amber-500/80 font-mono uppercase tracking-widest mb-0.5">All-Time Best</p>
+              <div class="flex items-baseline gap-3">
+                <p class="text-white font-medium text-lg">{{ personalRecord()?.maxWeight }}<span class="text-xs text-neutral-500 ml-0.5 font-mono">kg Max</span></p>
+                <p class="text-white font-medium text-lg">{{ personalRecord()?.max1RM }}<span class="text-xs text-neutral-500 ml-0.5 font-mono">kg 1RM</span></p>
+              </div>
+            </div>
+          </div>
+        }
+
         <!-- AI Advice Box -->
         @if (aiAdvice()) {
           <div class="bg-[#141414] border border-brand-500/30 p-5 rounded-2xl animate-fade-in relative shadow-lg shadow-brand-500/5">
@@ -69,7 +85,9 @@ import * as d3 from 'd3';
                </div>
              </div>
            </div>
-           <div class="w-full h-56 relative" #chartContainer></div>
+           <div class="w-full h-56 relative" #chartContainer>
+             <div #tooltip class="absolute hidden bg-neutral-900/95 backdrop-blur-md border border-white/10 p-3 rounded-xl text-[10px] font-mono text-white shadow-2xl pointer-events-none z-50 min-w-[120px] space-y-1.5"></div>
+           </div>
         </div>
 
         <!-- Recent Logs -->
@@ -89,6 +107,12 @@ import * as d3 from 'd3';
                      <span class="text-xl font-medium text-white">{{ log.reps }}<span class="text-sm font-mono text-neutral-500 ml-0.5">reps</span></span>
                      <span class="text-neutral-600 font-light">×</span>
                      <span class="text-xl font-medium text-white">{{ log.sets }}<span class="text-sm font-mono text-neutral-500 ml-0.5">sets</span></span>
+                     @if (log.weight === personalRecord()?.maxWeight || calculate1RM(log.weight, log.reps) === personalRecord()?.max1RM) {
+                       <span class="ml-2 bg-amber-500/20 text-amber-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                         PR
+                       </span>
+                     }
                    </div>
                    <div class="text-[10px] font-mono uppercase tracking-widest text-neutral-500 mt-3 flex flex-wrap gap-2 items-center">
                       <span class="bg-white/5 px-2 py-1 rounded-md text-neutral-400">Vol: {{ calculateVolume(log.weight, log.reps, log.sets) }}kg</span>
@@ -118,6 +142,29 @@ import * as d3 from 'd3';
            </div>
         </div>
       </div>
+
+      <!-- Active Rest Timer -->
+      @if (restTimer() !== null) {
+        <div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 animate-slide-up">
+          <div class="bg-brand-500 text-brand-950 px-6 py-3 rounded-full shadow-lg shadow-brand-500/20 flex items-center gap-4 font-mono font-bold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="animate-pulse"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="text-xl tracking-widest">{{ formatTimer(restTimer()!) }}</span>
+            <button (click)="stopTimer()" class="ml-2 p-1.5 bg-brand-950/10 hover:bg-brand-950/20 rounded-full transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Confirmation Message -->
+      @if (showConfirmation()) {
+        <div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+          <div class="bg-brand-500 text-brand-950 px-6 py-2 rounded-full shadow-lg shadow-brand-500/20 flex items-center gap-2 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Set logged successfully!
+          </div>
+        </div>
+      }
 
       <!-- Log Button -->
       <button (click)="isLogging.set(true)" 
@@ -201,14 +248,35 @@ export class WorkoutDetailComponent {
   private fb = inject(FormBuilder);
 
   @ViewChild('chartContainer') chartContainer!: ElementRef;
+  @ViewChild('tooltip') tooltip!: ElementRef;
 
   workoutId = signal<string>('');
   workout = computed(() => this.dataService.getWorkoutById(this.workoutId()));
   logs = computed(() => this.dataService.getLogsByWorkoutId(this.workoutId())());
   
+  personalRecord = computed(() => {
+    const currentLogs = this.logs();
+    if (currentLogs.length === 0) return null;
+    
+    let maxWeight = 0;
+    let max1RM = 0;
+    
+    currentLogs.forEach(log => {
+      if (log.weight > maxWeight) maxWeight = log.weight;
+      const oneRM = this.calculate1RM(log.weight, log.reps);
+      if (oneRM > max1RM) max1RM = oneRM;
+    });
+    
+    return { maxWeight, max1RM };
+  });
+
   isLogging = signal(false);
   isLoadingAi = signal(false);
   aiAdvice = signal<string | null>(null);
+  showConfirmation = signal(false);
+  
+  restTimer = signal<number | null>(null);
+  private timerInterval: any;
 
   logForm = this.fb.group({
     weight: [0, [Validators.required, Validators.min(1)]],
@@ -234,6 +302,38 @@ export class WorkoutDetailComponent {
     });
   }
 
+  ngOnDestroy() {
+    this.stopTimer();
+  }
+
+  startTimer(seconds: number) {
+    this.stopTimer();
+    this.restTimer.set(seconds);
+    this.timerInterval = setInterval(() => {
+      const current = this.restTimer();
+      if (current !== null && current > 0) {
+        this.restTimer.set(current - 1);
+      } else {
+        this.stopTimer();
+        // Optional: play a sound or vibration here
+      }
+    }, 1000);
+  }
+
+  stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+    this.restTimer.set(null);
+  }
+
+  formatTimer(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
   getLastLog() {
     const logs = this.logs();
     if (logs.length > 0) {
@@ -256,6 +356,8 @@ export class WorkoutDetailComponent {
 
   submitLog() {
     if (this.logForm.valid && this.workoutId()) {
+      const restTime = this.logForm.value.restTime;
+      
       this.dataService.addLog({
         workoutId: this.workoutId(),
         date: new Date().toISOString(),
@@ -263,11 +365,18 @@ export class WorkoutDetailComponent {
         reps: this.logForm.value.reps!,
         sets: this.logForm.value.sets!,
         rpe: this.logForm.value.rpe || undefined,
-        restTime: this.logForm.value.restTime || undefined,
+        restTime: restTime || undefined,
         notes: this.logForm.value.notes || undefined
       });
       this.isLogging.set(false);
       this.aiAdvice.set(null); // Clear old advice on new log
+      
+      this.showConfirmation.set(true);
+      setTimeout(() => this.showConfirmation.set(false), 3000);
+      
+      if (restTime && restTime > 0) {
+        this.startTimer(restTime);
+      }
     }
   }
 
@@ -380,21 +489,48 @@ export class WorkoutDetailComponent {
     svg.append('g')
        .call(d3.axisLeft(yWeight).ticks(5))
        .attr('color', '#22c55e') // brand-500
-       .style('font-size', '10px');
+       .style('font-size', '9px')
+       .style('font-family', 'JetBrains Mono');
+
+    // Left Axis Title
+    svg.append('text')
+       .attr('transform', 'rotate(-90)')
+       .attr('y', -margin.left + 12)
+       .attr('x', -height / 2)
+       .attr('text-anchor', 'middle')
+       .attr('fill', '#22c55e')
+       .style('font-size', '9px')
+       .style('font-weight', 'bold')
+       .style('font-family', 'JetBrains Mono')
+       .text('WEIGHT (KG)');
 
     // Draw Right Axis (Reps - Neutral)
     svg.append('g')
        .attr('transform', `translate(${width},0)`)
        .call(d3.axisRight(yReps).ticks(5))
        .attr('color', '#a3a3a3') // neutral-400
-       .style('font-size', '10px');
+       .style('font-size', '9px')
+       .style('font-family', 'JetBrains Mono');
+
+    // Right Axis Title
+    svg.append('text')
+       .attr('transform', 'rotate(-90)')
+       .attr('y', width + margin.right - 10)
+       .attr('x', -height / 2)
+       .attr('text-anchor', 'middle')
+       .attr('fill', '#a3a3a3')
+       .style('font-size', '9px')
+       .style('font-weight', 'bold')
+       .style('font-family', 'JetBrains Mono')
+       .text('REPS');
 
     // Draw X Axis
     svg.append('g')
       .attr('transform', `translate(0,${height})`)
       .call(d3.axisBottom(x).ticks(5).tickFormat((d) => d3.timeFormat('%b %d')(d as Date)))
       .attr('color', '#525252') // neutral-600
-      .style('font-size', '10px');
+      .style('font-size', '9px')
+      .style('font-family', 'JetBrains Mono');
 
     // Add Grid (based on weight)
     svg.append('g')
@@ -427,9 +563,12 @@ export class WorkoutDetailComponent {
       .append('circle')
       .attr('cx', d => x(new Date(d.date)))
       .attr('cy', d => yReps(d.reps))
-      .attr('r', 3)
+      .attr('r', 4)
       .attr('fill', '#171717') // neutral-900 background
-      .attr('stroke', '#a3a3a3'); // neutral-400 border
+      .attr('stroke', '#a3a3a3') // neutral-400 border
+      .style('cursor', 'pointer')
+      .on('mouseover', (event, d) => this.showTooltip(event, d))
+      .on('mouseout', () => this.hideTooltip());
 
     // Draw Weight Dots
     svg.selectAll('.dot-weight')
@@ -438,9 +577,55 @@ export class WorkoutDetailComponent {
       .append('circle')
       .attr('cx', d => x(new Date(d.date)))
       .attr('cy', d => yWeight(d.weight))
-      .attr('r', 4)
+      .attr('r', 5)
       .attr('fill', '#052e16') // brand-950
       .attr('stroke', '#22c55e') // brand-500 border
-      .attr('stroke-width', 2);
+      .attr('stroke-width', 2)
+      .style('cursor', 'pointer')
+      .on('mouseover', (event, d) => this.showTooltip(event, d))
+      .on('mouseout', () => this.hideTooltip());
+  }
+
+  private showTooltip(event: any, d: Log) {
+    const tooltipEl = this.tooltip.nativeElement;
+    const [mouseX, mouseY] = d3.pointer(event, this.chartContainer.nativeElement);
+    
+    tooltipEl.innerHTML = `
+      <div class="text-neutral-400 mb-1 border-b border-white/5 pb-1">${new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+      <div class="flex justify-between gap-4">
+        <span class="text-brand-400">Weight:</span>
+        <span class="text-white font-bold">${d.weight}kg</span>
+      </div>
+      <div class="flex justify-between gap-4">
+        <span class="text-neutral-400">Reps:</span>
+        <span class="text-white font-bold">${d.reps}</span>
+      </div>
+      <div class="flex justify-between gap-4">
+        <span class="text-neutral-400">Sets:</span>
+        <span class="text-white font-bold">${d.sets}</span>
+      </div>
+    `;
+
+    tooltipEl.classList.remove('hidden');
+    
+    // Position tooltip
+    const tooltipWidth = tooltipEl.clientWidth;
+    const tooltipHeight = tooltipEl.clientHeight;
+    const containerWidth = this.chartContainer.nativeElement.clientWidth;
+    
+    let left = mouseX + 15;
+    let top = mouseY - tooltipHeight / 2;
+    
+    // Flip if near right edge
+    if (left + tooltipWidth > containerWidth) {
+      left = mouseX - tooltipWidth - 15;
+    }
+    
+    tooltipEl.style.left = `${left}px`;
+    tooltipEl.style.top = `${top}px`;
+  }
+
+  private hideTooltip() {
+    this.tooltip.nativeElement.classList.add('hidden');
   }
 }

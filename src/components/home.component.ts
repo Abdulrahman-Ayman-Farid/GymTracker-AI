@@ -51,6 +51,49 @@ import { DataService, Log, Workout, Category } from '../services/data.service';
         </div>
       </div>
 
+      <!-- Consistency Heatmap -->
+      <div class="mb-10">
+        <h3 class="text-neutral-300 font-medium text-sm tracking-wide mb-5">Consistency (Last 28 Days)</h3>
+        <div class="bg-[#141414] border border-white/5 rounded-[1.5rem] p-5 shadow-sm">
+          <div class="grid grid-cols-7 gap-2">
+            @for (day of heatmapDays(); track day.date.toISOString()) {
+              <div class="aspect-square rounded-md border"
+                   [ngClass]="{
+                     'bg-brand-500 border-brand-400 shadow-[0_0_8px_rgba(34,197,94,0.4)]': day.active,
+                     'bg-white/5 border-white/5': !day.active,
+                     'ring-2 ring-white/20': day.isToday
+                   }"
+                   [title]="day.date.toLocaleDateString()">
+              </div>
+            }
+          </div>
+          <div class="flex justify-between mt-4 text-[10px] font-mono uppercase tracking-widest text-neutral-500">
+            <span>4 Weeks Ago</span>
+            <span>Today</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workout Routines -->
+      <div class="mb-10">
+        <h3 class="text-neutral-300 font-medium text-sm tracking-wide mb-5">Your Routines</h3>
+        <div class="flex overflow-x-auto gap-4 pb-4 -mx-6 px-6 snap-x hide-scrollbar">
+          @for (routine of dataService.routines(); track routine.id) {
+            <a [routerLink]="['/routine', routine.id]" 
+               class="snap-start shrink-0 w-64 bg-[#141414] border border-white/5 rounded-[1.5rem] p-5 hover:border-brand-500/30 transition-all active:scale-95 shadow-sm">
+              <div class="w-10 h-10 rounded-full bg-brand-500/10 text-brand-400 flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              </div>
+              <h4 class="text-white font-medium text-lg mb-1">{{ routine.name }}</h4>
+              <p class="text-xs text-neutral-500 font-light line-clamp-2">{{ routine.description }}</p>
+              <div class="mt-4 text-[10px] font-mono uppercase tracking-widest text-neutral-400 bg-white/5 inline-block px-2 py-1 rounded-md">
+                {{ routine.workoutIds.length }} Exercises
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+
       <!-- Recent Activity -->
       @if (recentLogs().length > 0) {
         <div class="mb-10">
@@ -137,6 +180,27 @@ export class HomeComponent {
     // Count unique days with logs
     const days = new Set(this.weeklyLogs().map(log => new Date(log.date).toDateString()));
     return days.size;
+  });
+
+  heatmapDays = computed(() => {
+    const days = [];
+    const today = new Date();
+    // Generate last 28 days (4 weeks)
+    for (let i = 27; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateString = d.toDateString();
+      
+      // Check if any log exists for this date
+      const hasLog = this.dataService.logs().some(log => new Date(log.date).toDateString() === dateString);
+      
+      days.push({
+        date: d,
+        active: hasLog,
+        isToday: i === 0
+      });
+    }
+    return days;
   });
 
   recentLogs = computed(() => {
